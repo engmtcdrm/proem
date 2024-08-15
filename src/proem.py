@@ -18,6 +18,7 @@ class Proem:
     :param flavor_text: (optional) A short description of the application.
     :param version: (optional) The version of the application.
     :param repo_url: (optional) The URL to the repository for the application.
+    :param repo_issues_url: (optional) The URL to the repository issues for the application.
     :param width: (optional) The width of the proem. If set to 0 or below, width will be set to the terminal width. (default is ``80``)
     :param border_char: (optional) The character used to create the border. (default is ``#``)
     :param border_color: (optional) The color of the border. (default is ``magenta``)
@@ -31,6 +32,7 @@ class Proem:
         flavor_text: str = None,
         version: str = None,
         repo_url: str = None,
+        repo_issues_url: str = None,
         width: int = 80,
         border_char: str = "#",
         border_color: str = "magenta",
@@ -41,6 +43,7 @@ class Proem:
         self.flavor_text = flavor_text
         self.version = version
         self.repo_url = repo_url
+        self.repo_issues_url = repo_issues_url
         self.width = width
         self.border_char = border_char
         self.border_color = border_color
@@ -125,8 +128,11 @@ class Proem:
         if self.repo_url:
             max_width = max(max_width, len(self.repo_url))
 
+        if self.repo_issues_url:
+            max_width = max(max_width, len(self.repo_issues_url))
+
         if self.version:
-            max_width = max(max_width, len('version ' + self.version))
+            max_width = max(max_width, len(self.version))
 
         return max_width
 
@@ -219,6 +225,10 @@ class Proem:
             proem_str += self._empty_line() + '\n'
             proem_str += self._text_line(self.repo_url)
 
+        if self.repo_issues_url:
+            proem_str += self._empty_line() + '\n'
+            proem_str += self._text_line(self.repo_issues_url)
+
         if self.description:
             proem_str += self._empty_line() + '\n'
             proem_str += self._text_line(text = self.description, align = self.description_align)
@@ -248,6 +258,10 @@ class Proem:
         if self.repo_url:
             proem_list.append(self._empty_line())
             proem_list.append(self._text_line(self.repo_url, nl=False))
+
+        if self.repo_issues_url:
+            proem_list.append(self._empty_line())
+            proem_list.append(self._text_line(self.repo_issues_url, nl=False))
 
         if self.description:
             proem_list.append(self._empty_line())
