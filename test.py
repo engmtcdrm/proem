@@ -5,6 +5,7 @@ p = Proem(
     flavor_text='this is my flavor',
     version='v1.0.0',
     repo_url='https://github.com/test-app',
+    repo_issues_url='https://github.com/test-app/issues',
     width=-1
 )
 
