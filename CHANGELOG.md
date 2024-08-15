@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Added `build_list` method to output proem as a list of strings. (#1)
+- Added new property called `repo_issues_url` for referencing an repository issues url (#3)
 
 ## [v1.0.0] - 2024-05-06
 
