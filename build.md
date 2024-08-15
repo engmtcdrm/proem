@@ -19,7 +19,7 @@ python -m venv env
 .\env\Scripts\activate
 
 # test pypi site
-python -m pip install --index-url https://test.pypi.org/simple/ --no-deps banner
+python -m pip install --index-url https://test.pypi.org/simple/ --no-deps proem
 
 python -m pip install pytest
 
