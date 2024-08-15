@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added `build_list` method to output proem as a list of strings. (#1)
+
 ## [v1.0.0] - 2024-05-06
 
 Initial release
