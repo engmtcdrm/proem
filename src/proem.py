@@ -4,6 +4,7 @@ A class to create a proem of information for a command line application.
 import math
 import os
 import logging
+from typing import List
 
 from colorama import Fore, just_fix_windows_console
 
@@ -13,15 +14,15 @@ class Proem:
     """
     A class to create a proem of information for a command line application.
 
-    :app_nm: The name of the application.
-    :flavor_text: (optional) A short description of the application.
-    :version: (optional) The version of the application.
-    :repo_url: (optional) The URL to the repository for the application.
-    :width: (optional) The width of the proem. If set to 0 or below, width will be set to the terminal width. (default is ``80``)
-    :border_char: (optional) The character used to create the border. (default is ``#``)
-    :border_color: (optional) The color of the border. (default is ``magenta``)
-    :description: (optional) A long description of the application. (default is ``None``)
-    :description_align: (optional) The alignment of the description text. Must be ``left``, ``center``, or ``right``. (default is ``left``)
+    :param app_nm: The name of the application.
+    :param flavor_text: (optional) A short description of the application.
+    :param version: (optional) The version of the application.
+    :param repo_url: (optional) The URL to the repository for the application.
+    :param width: (optional) The width of the proem. If set to 0 or below, width will be set to the terminal width. (default is ``80``)
+    :param border_char: (optional) The character used to create the border. (default is ``#``)
+    :param border_color: (optional) The color of the border. (default is ``magenta``)
+    :param description: (optional) A long description of the application. (default is ``None``)
+    :param description_align: (optional) The alignment of the description text. Must be ``left``, ``center``, or ``right``. (default is ``left``)
     """
 
     def __init__(
@@ -69,23 +70,25 @@ class Proem:
     def _border_char(self) -> str:
         return self._border_color_str + self.border_char + Fore.RESET
 
-    def _border_line(self):
-        return self._border_color_str + self.border_char * self.width + Fore.RESET + '\n'
+    def _border_line(self) -> str:
+        return self._border_color_str + self.border_char * self.width + Fore.RESET
 
-    def _empty_line(self):
-        return self._border_char() + ' ' * self._empty_width * len(self.border_char) + self._border_char() + '\n'
+    def _empty_line(self) -> str:
+        return self._border_char() + ' ' * self._empty_width * len(self.border_char) + self._border_char()
 
     def _wrap_text_left(self, text: str) -> str:
-        return self._border_char() + ' ' + text.ljust(self._empty_width * len(self.border_char) - 1) + self._border_char() + '\n'
+        return self._border_char() + ' ' + text.ljust(self._empty_width * len(self.border_char) - 1) + self._border_char()
 
     def _wrap_text_center(self, text: str) -> str:
-        return self._border_char() + text.center(self._empty_width * len(self.border_char)) + self._border_char() + '\n'
+        return self._border_char() + text.center(self._empty_width * len(self.border_char)) + self._border_char()
 
     def _wrap_text_right(self, text: str) -> str:
-        return self._border_char() + text.rjust(self._empty_width * len(self.border_char) - 1) + ' ' + self._border_char() + '\n'
+        return self._border_char() + text.rjust(self._empty_width * len(self.border_char) - 1) + ' ' + self._border_char()
 
-    def _text_line(self, text: str, align: str = 'center'):
+    def _text_line(self, text: str, align: str = 'center', nl: bool = True) -> str:
         pad_width = self.width - 4
+
+        _nl = '\n' if nl else ''
 
         # Calculate the number of chunks the text will be split into.
         chunks = math.ceil(len(text) / pad_width)
@@ -105,11 +108,11 @@ class Proem:
         # Split the text into chunks and apply the alignment method to each chunk.
         for x in range(chunks):
             if x == 0:
-                text_line += method(text[0:pad_width])
+                text_line += method(text[0:pad_width]) + _nl
             elif x == chunks - 1:
-                text_line += method(text[pad_width * x:])
+                text_line += method(text[pad_width * x:]) + _nl
             else:
-                text_line += method(text[pad_width * x:pad_width * (x + 1)])
+                text_line += method(text[pad_width * x:pad_width * (x + 1)]) + _nl
 
         return text_line
 
@@ -138,6 +141,8 @@ class Proem:
     def width(self, width: int):
         """
         Set the width of the proem.
+
+        :param width: The width of the proem. If set to 0 or below, width will be set to the terminal width.
         """
         max_width = self._find_max_width() + 4
 
@@ -170,7 +175,7 @@ class Proem:
         """
         Set the alignment of the description text.
 
-        :description_align: The alignment of the description text. Must be ``left``, ``center``, or ``right``.
+        :param description_align: The alignment of the description text. Must be ``left``, ``center``, or ``right``.
         """
         if description_align not in ['left', 'center', 'right']:
             raise ValueError("description_align must be 'left', 'center', or 'right'")
@@ -189,38 +194,71 @@ class Proem:
         """
         Set the color of the border.
 
-        :border_color: The color of the border.
+        :param border_color: The color of the border.
         """
         self._border_color = border_color
         self._border_color_str = self._str_to_color()
 
     def build(self) -> str:
         """
-        Build the proem text.
+        Build the proem text as a string.
 
-        :return: The proem text.
+        :return: The proem text as a string
         """
-        proem_text = self._border_line()
-        proem_text += self._text_line(self.app_nm)
+        proem_str = self._border_line() + '\n'
+        proem_str += self._text_line(self.app_nm)
 
         if self.flavor_text:
-            proem_text += self._text_line(self.flavor_text)
+            proem_str += self._text_line(self.flavor_text)
 
         if self.version:
-            proem_text += self._empty_line()
-            proem_text += self._text_line(self.version)
+            proem_str += self._empty_line() + '\n'
+            proem_str += self._text_line(self.version)
 
         if self.repo_url:
-            proem_text += self._empty_line()
-            proem_text += self._text_line(self.repo_url)
+            proem_str += self._empty_line() + '\n'
+            proem_str += self._text_line(self.repo_url)
 
         if self.description:
-            proem_text += self._empty_line()
-            proem_text += self._text_line(text = self.description, align = self.description_align)
+            proem_str += self._empty_line() + '\n'
+            proem_str += self._text_line(text = self.description, align = self.description_align)
 
-        proem_text += self._border_line()
+        proem_str += self._border_line() + '\n'
 
-        return proem_text
+        return proem_str
+
+    def build_list(self) -> List[str]:
+        """
+        Build the proem text as a list of strings.
+
+        :return: The proem text as a list of strings
+        """
+        proem_list = []
+
+        proem_list.append(self._border_line())
+        proem_list.append(self._text_line(self.app_nm, nl=False))
+
+        if self.flavor_text:
+            proem_list.append(self._text_line(self.flavor_text, nl=False))
+
+        if self.version:
+            proem_list.append(self._empty_line())
+            proem_list.append(self._text_line(self.version, nl=False))
+
+        if self.repo_url:
+            proem_list.append(self._empty_line())
+            proem_list.append(self._text_line(self.repo_url, nl=False))
+
+        if self.description:
+            proem_list.append(self._empty_line())
+            proem_list.append(self._text_line(text = self.description, align = self.description_align, nl=False))
+
+        proem_list.append(self._border_line())
+
+        return proem_list
 
     def __str__(self):
         return self.build()
+
+    def __iter__(self):
+        return iter(self.build_list())

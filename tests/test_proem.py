@@ -132,3 +132,14 @@ def test_bad_align():
         p = Proem('test-app')
 
         p._text_line('test', 'bad_align') # pylint: disable=protected-access
+
+def test_str_list():
+    """Test Proem build and build_list functions create the same output."""
+    p = Proem(
+        app_nm = 'test-app',
+        flavor_text='this is my flavor',
+        version='v1.0.0',
+        repo_url='https://github.com/test-app'
+    )
+
+    assert p.build() == '\n'.join(p.build_list()) + '\n'
