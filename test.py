@@ -9,3 +9,6 @@ p = Proem(
 )
 
 print(p.build())
+
+for line in p.build_list():
+    print(line)
